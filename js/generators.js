@@ -71,9 +71,9 @@ const Gen = (() => {
     const d = String(n).padStart(3, '0').split('').map(Number);
     const ask = pick(s.ask || ['number', 'tens', 'ones']);
     const visual = Vis.number(n);
-    if (ask === 'tens') return { kind: 'fact', text: 'How many <b>tens</b> (long rods) are there?', visual, answer: String(d[1]) };
-    if (ask === 'ones') return { kind: 'fact', text: 'How many <b>ones</b> (little cubes) are there?', visual, answer: String(d[2]) };
-    if (ask === 'hundreds') return { kind: 'fact', text: 'How many <b>hundreds</b> (big squares) are there?', visual, answer: String(d[0]) };
+    if (ask === 'tens') return { kind: 'fact', text: 'How many <b>rods</b> are in the <b>tens</b> place?', visual, answer: String(d[1]) };
+    if (ask === 'ones') return { kind: 'fact', text: 'How many <b>loose cubes</b> are in the <b>ones</b> place? (Don't count the ones bundled into rods.)', visual, answer: String(d[2]) };
+    if (ask === 'hundreds') return { kind: 'fact', text: 'How many <b>big squares</b> are in the <b>hundreds</b> place?', visual, answer: String(d[0]) };
     return { kind: 'fact', text: 'What number do the blocks show?', visual, answer: String(n) };
   }
   function placeValue(s) {

@@ -60,7 +60,7 @@ const Curriculum = (() => {
             { title: 'Same digit, different place', html: `<p>The digit 3 can mean different amounts. It depends on <b>where</b> it sits!</p><div class="same-digit"><div>${Vis.number(3, true)}<b>3</b><span>3 ones</span></div><div>${Vis.number(30, true)}<b>30</b><span>3 tens</span></div></div><p class="say">Every step to the <b>left</b> makes a digit worth <b>ten times more</b>.</p>` },
             { title: 'Ten tens make a hundred', html: `<p>Keep counting up: 97, 98, 99 ... now the ones <i>and</i> the tens are full! Ten rods bundle into one big <b>hundred</b> square, and we need a third place.</p><div class="bundle-demo">${Vis.blocks(0, 10, 0)}<span class="arrow">&rarr;</span>${Vis.blocks(1, 0, 0)}</div>${Vis.chart(100)}<p class="say"><b>100</b> = 1 hundred, 0 tens, 0 ones.</p>` },
             { title: 'Reading a big number', html: `${Vis.number(342, true)}${Vis.chart(342)}<p class="say"><b>342</b> = 3 hundreds + 4 tens + 2 ones = 300 + 40 + 2.</p><p>Knowing places is the secret to adding and subtracting big numbers: we always line up ones under ones and tens under tens.</p>` },
-            { title: 'Your turn', html: `<p>You'll see blocks. Count the <b>rods</b> (tens) and the <b>cubes</b> (ones), then answer the question.</p>${Vis.number(46)}<p class="say">4 rods and 6 cubes &rarr; 4 tens and 6 ones &rarr; <b>46</b></p>` },
+            { title: 'Your turn', html: `<p>You'll see blocks. The <b>rods</b> are the tens place (each rod is ten cubes stuck together). The <b>loose cubes</b> are the ones place. Count each group, then answer the question.</p>${Vis.number(46, true)}<p class="say">4 rods in the tens place and 6 loose cubes in the ones place &rarr; <b>46</b></p>` },
           ],
         },
         {
