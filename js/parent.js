@@ -92,6 +92,8 @@ const Parent = (() => {
     const row = (label, control) => el('div.setting-row', {}, el('span', { text: label }), control);
     const toggle = (val, fn) => el('button.toggle' + (val ? '.on' : ''), { onclick: e => { fn(!val); Store.save(); settingsRefresh(); } }, val ? 'On' : 'Off');
     card.appendChild(row('Sounds', toggle(s.sound, v => { s.sound = v; Sound.setEnabled(v); })));
+    const dark = Screens.Dark;
+    card.appendChild(row('Dark mode (this device)', el('div.seg', {}, ...['auto', 'on', 'off'].map(m => el('button.seg-btn' + (dark.mode === m ? '.on' : ''), { onclick: () => { dark.mode = m; settingsRefresh(); } }, m === 'auto' ? 'Auto' : m === 'on' ? 'On' : 'Off')))));
     card.appendChild(row('Unlock all lessons (skip the path)', toggle(s.unlockAll, v => { s.unlockAll = v; })));
     card.appendChild(row('Daily goal (lessons per day)', el('div.stepper', {},
       el('button.btn.ghost.small', { onclick: () => { s.dailyGoal = Math.max(1, s.dailyGoal - 1); Store.save(); settingsRefresh(); } }, '−'),

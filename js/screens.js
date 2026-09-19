@@ -8,8 +8,23 @@ const Screens = (() => {
       el('h1', { text: title }),
       right ? el('div.coin-pill', { html: right }) : el('span'));
   }
+  /* Dark mode is a per-device display preference: 'auto' follows the system setting */
+  const DARK_KEY = 'numberquest.v1.dark';
+  const Dark = {
+    get mode() { try { return localStorage.getItem(DARK_KEY) || 'auto'; } catch (e) { return 'auto'; } },
+    set mode(v) { try { localStorage.setItem(DARK_KEY, v); } catch (e) { /* ignore */ } Dark.apply(); },
+    get active() { const m = Dark.mode; return m === 'on' || (m === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); },
+    apply() { document.body.classList.toggle('dark', Dark.active); },
+    toggle() { Dark.mode = Dark.active ? 'off' : 'on'; Sound.play('tap'); },
+    button() {
+      return el('button.icon-btn.dark-btn', { onclick: e => { Dark.toggle(); e.currentTarget.textContent = Dark.active ? '☀️' : '🌙'; }, title: 'Dark mode' }, Dark.active ? '☀️' : '🌙');
+    },
+  };
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => Dark.apply());
+
   function applyTheme(p) {
     document.body.className = 'theme-' + ((p && p.theme) || 'sky');
+    Dark.apply();
   }
   function leaveGames() { Arcade.stop(); Lesson.stop(); }
 
@@ -20,6 +35,7 @@ const Screens = (() => {
     applyTheme(null);
     const app = document.getElementById('app');
     app.innerHTML = ''; app.className = 'screen profiles-screen';
+    app.appendChild(el('div.corner', {}, Dark.button()));
     app.appendChild(el('div.logo', {}, el('span.logo-icon', { text: '🦊' }), el('h1', { text: 'Number Quest' }), el('p', { text: 'Who is playing today?' })));
     const grid = el('div.profile-grid');
     Store.data.profiles.forEach(p => {
@@ -75,7 +91,7 @@ const Screens = (() => {
       el('div.home-info', {},
         el('h1', { text: `Hi, ${p.name}!` }),
         el('div.level-row', {}, el('span.level-lbl', { text: `Level ${lv}` }), el('div.progress-bar.xp', {}, el('div.progress-fill', { style: { width: `${Math.round(100 * (p.xp - lo) / (hi - lo))}%` } })), el('span.level-lbl.muted', { text: `${p.xp - lo}/${hi - lo} XP` }))),
-      el('div.pills', {}, el('span.coin-pill', { html: `🪙 ${p.coins}` }), el('span.coin-pill.streak', { html: `🔥 ${p.streak.count || 0}` })));
+      el('div.pills', {}, el('span.coin-pill', { html: `🪙 ${p.coins}` }), el('span.coin-pill.streak', { html: `🔥 ${p.streak.count || 0}` }), Dark.button()));
     app.appendChild(head);
 
     const goal = Store.settings.dailyGoal, done = p.daily.day === U.todayKey() ? p.daily.done : 0;
@@ -136,5 +152,5 @@ const Screens = (() => {
     app.appendChild(path);
   }
 
-  return { topbar, applyTheme, profiles, newProfile, home, world };
+  return { topbar, applyTheme, profiles, newProfile, home, world, Dark };
 })();

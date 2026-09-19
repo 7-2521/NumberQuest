@@ -7,8 +7,18 @@ const Vis = (() => {
   const groups = (emoji, counts) => `<div class="groups">${counts.map(n => `<div class="group">${objs(emoji, n)}</div>`).join('<span class="gplus">+</span>')}</div>`;
   const array = (emoji, rows, cols) => `<div class="array">${Array.from({ length: rows }, () => `<div class="arow">${objs(emoji, cols)}</div>`).join('')}</div>`;
   const removed = (emoji, total, gone) => `<span class="objs">${Array.from({ length: total }, (_, i) => `<span class="obj ${i >= total - gone ? 'gone' : ''}">${emoji}</span>`).join('')}</span>`;
-  const tens = (t, o) => `<div class="tens-ones">${Array.from({ length: t }, () => '<div class="ten-rod"></div>').join('')}${o ? `<div class="ones-cubes">${Array.from({ length: o }, () => '<div class="one-cube"></div>').join('')}</div>` : ''}</div>`;
-  return { objs, groups, array, removed, tens };
+  // base-ten blocks: hundreds flats, tens rods, ones cubes
+  const flat = () => `<div class="hundred-flat">${'<i></i>'.repeat(100)}</div>`;
+  const lbl = (n, word, labels) => (labels ? `<span class="pv-lbl">${n} ${word}${n > 1 ? 's' : ''}</span>` : '');
+  const blocks = (h, t, o, labels = false) => `<div class="tens-ones">`
+    + (h ? `<div class="pv-group"><div class="flats">${Array.from({ length: h }, flat).join('')}</div>${lbl(h, 'hundred', labels)}</div>` : '')
+    + (t ? `<div class="pv-group"><div class="rods">${Array.from({ length: t }, () => '<div class="ten-rod"></div>').join('')}</div>${lbl(t, 'ten', labels)}</div>` : '')
+    + (o ? `<div class="pv-group"><div class="ones-cubes">${Array.from({ length: o }, () => '<div class="one-cube"></div>').join('')}</div>${lbl(o, 'one', labels)}</div>` : '')
+    + `</div>`;
+  const tens = (t, o, labels) => blocks(0, t, o, labels);
+  const number = (n, labels) => { const d = String(n).padStart(3, '0').split('').map(Number); return blocks(d[0], d[1], d[2], labels); };
+  const chart = n => { const d = String(n).split(''); const names = ['Ones', 'Tens', 'Hundreds', 'Thousands'].slice(0, d.length).reverse(); return `<table class="pv"><tr>${names.map(x => `<th>${x}</th>`).join('')}</tr><tr>${d.map(x => `<td>${x}</td>`).join('')}</tr></table>`; };
+  return { objs, groups, array, removed, tens, blocks, number, chart };
 })();
 
 const Gen = (() => {
@@ -55,15 +65,26 @@ const Gen = (() => {
       choices: [{ v: '<', label: '<', sub: 'is less than' }, { v: '=', label: '=', sub: 'is equal to' }, { v: '>', label: '>', sub: 'is greater than' }],
     };
   }
+  // Count base-ten blocks: how many hundreds / tens / ones, or what number is shown
+  function bundles(s) {
+    const n = rand(s.min || 11, s.max || 99);
+    const d = String(n).padStart(3, '0').split('').map(Number);
+    const ask = pick(s.ask || ['number', 'tens', 'ones']);
+    const visual = Vis.number(n);
+    if (ask === 'tens') return { kind: 'fact', text: 'How many <b>tens</b> (long rods) are there?', visual, answer: String(d[1]) };
+    if (ask === 'ones') return { kind: 'fact', text: 'How many <b>ones</b> (little cubes) are there?', visual, answer: String(d[2]) };
+    if (ask === 'hundreds') return { kind: 'fact', text: 'How many <b>hundreds</b> (big squares) are there?', visual, answer: String(d[0]) };
+    return { kind: 'fact', text: 'What number do the blocks show?', visual, answer: String(n) };
+  }
   function placeValue(s) {
     const max = s.max || 99;
-    const n = rand(10, max);
+    const n = rand(s.min || 10, max);
     const digits = String(n).split('').map(Number).reverse();
     const names = ['ones', 'tens', 'hundreds', 'thousands'];
     const variant = pick(s.variants || ['build', 'digit', 'howmany']);
     if (variant === 'build') {
       const parts = digits.map((d, i) => `${d} ${names[i]}`).reverse().filter(p => !p.startsWith('0 '));
-      return { kind: 'fact', text: `What number is <b>${parts.join(' and ')}</b>?`, visual: n < 100 ? Vis.tens(digits[1], digits[0]) : null, answer: String(n) };
+      return { kind: 'fact', text: `What number is <b>${parts.join(' and ')}</b>?`, visual: s.visual === false ? null : Vis.number(n), answer: String(n) };
     }
     if (variant === 'digit') {
       const i = rand(0, digits.length - 1);
@@ -266,7 +287,7 @@ const Gen = (() => {
     return { kind: 'fact', word: true, text: `${emoji} ${text}`, visual, answer: String(answer), eq };
   }
 
-  const TYPES = { count, next, skip, compare, placeValue, addFacts, subFacts, makeTen, missingAddend, factFamily, addThree, mulFacts, groups, divFacts, sharing, mulDivFamily, column, word };
+  const TYPES = { count, next, skip, compare, bundles, placeValue, addFacts, subFacts, makeTen, missingAddend, factFamily, addThree, mulFacts, groups, divFacts, sharing, mulDivFamily, column, word };
 
   function make(spec, profile) {
     if (spec.type === 'mixed') return make(pick(spec.gens), profile);

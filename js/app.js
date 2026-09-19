@@ -1,6 +1,7 @@
 /* Bootstrap */
 (async function boot() {
   const app = document.getElementById('app');
+  Screens.Dark.apply();
   app.innerHTML = '<div class="loading">🦊 Loading…</div>';
   try {
     await Store.load();

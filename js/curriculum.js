@@ -51,6 +51,19 @@ const Curriculum = (() => {
           ],
         },
         {
+          id: 'places', title: 'What Is a Place?', icon: '🏠', practice: 6, quiz: 8,
+          gen: { type: 'bundles', min: 11, max: 99, ask: ['number', 'tens', 'ones'] },
+          learn: [
+            { title: 'We only have ten digits', html: `<p>Every number in the world is written with just these ten digits:</p><div class="digits-row">${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(d => `<span>${d}</span>`).join('')}</div><p>Count with me: 7, 8, 9 ... and then we <b>run out of digits</b>! So what comes next?</p>` },
+            { title: 'Bundle ten into one', html: `<p>When we have ten ones, we tie them into one <b>bundle of ten</b> and start counting ones again from zero.</p><div class="bundle-demo">${Vis.blocks(0, 0, 10)}<span class="arrow">&rarr;</span>${Vis.blocks(0, 1, 0)}</div><p class="say">10 little cubes = 1 long rod. We write it <b>10</b>: that means <b>1 ten and 0 ones</b>.</p>` },
+            { title: 'The place tells you what it counts', html: `<p>A number is like a row of boxes. Each box is a <b>place</b>. The box on the far <b>right</b> counts <b>ones</b>. The next box to the <b>left</b> counts <b>tens</b>.</p>${Vis.chart(23)}${Vis.number(23, true)}<p class="say">23 means 2 rods and 3 cubes: <b>2 tens and 3 ones</b>. 20 + 3 = 23.</p>` },
+            { title: 'Same digit, different place', html: `<p>The digit 3 can mean different amounts. It depends on <b>where</b> it sits!</p><div class="same-digit"><div>${Vis.number(3, true)}<b>3</b><span>3 ones</span></div><div>${Vis.number(30, true)}<b>30</b><span>3 tens</span></div></div><p class="say">Every step to the <b>left</b> makes a digit worth <b>ten times more</b>.</p>` },
+            { title: 'Ten tens make a hundred', html: `<p>Keep counting up: 97, 98, 99 ... now the ones <i>and</i> the tens are full! Ten rods bundle into one big <b>hundred</b> square, and we need a third place.</p><div class="bundle-demo">${Vis.blocks(0, 10, 0)}<span class="arrow">&rarr;</span>${Vis.blocks(1, 0, 0)}</div>${Vis.chart(100)}<p class="say"><b>100</b> = 1 hundred, 0 tens, 0 ones.</p>` },
+            { title: 'Reading a big number', html: `${Vis.number(342, true)}${Vis.chart(342)}<p class="say"><b>342</b> = 3 hundreds + 4 tens + 2 ones = 300 + 40 + 2.</p><p>Knowing places is the secret to adding and subtracting big numbers: we always line up ones under ones and tens under tens.</p>` },
+            { title: 'Your turn', html: `<p>You'll see blocks. Count the <b>rods</b> (tens) and the <b>cubes</b> (ones), then answer the question.</p>${Vis.number(46)}<p class="say">4 rods and 6 cubes &rarr; 4 tens and 6 ones &rarr; <b>46</b></p>` },
+          ],
+        },
+        {
           id: 'place2', title: 'Tens and Ones', icon: '🧱', practice: 6, quiz: 8,
           gen: { type: 'placeValue', max: 99 },
           learn: [
@@ -60,9 +73,9 @@ const Curriculum = (() => {
         },
         {
           id: 'place3', title: 'Hundreds, Tens, Ones', icon: '🏢', practice: 6, quiz: 8,
-          gen: { type: 'placeValue', max: 999 },
+          gen: { type: 'mixed', gens: [{ type: 'placeValue', min: 100, max: 999 }, { type: 'bundles', min: 100, max: 999, ask: ['number', 'hundreds', 'tens'] }] },
           learn: [
-            { title: 'Three-digit numbers', html: `<p><b>582</b> has three digits.</p><table class="pv"><tr><th>Hundreds</th><th>Tens</th><th>Ones</th></tr><tr><td>5</td><td>8</td><td>2</td></tr></table><p class="say">5 hundreds + 8 tens + 2 ones = 500 + 80 + 2 = <b>582</b></p>` },
+            { title: 'Three-digit numbers', html: `<p><b>582</b> has three digits. Remember: ten tens make one hundred, so the third place from the right counts <b>hundreds</b>.</p>${Vis.number(582, true)}${Vis.chart(582)}<p class="say">5 hundreds + 8 tens + 2 ones = 500 + 80 + 2 = <b>582</b></p>` },
             { title: 'Reading places', html: `<p>Always count places starting from the <b>right</b>: ones, then tens, then hundreds.</p>${eq('<span class="pvd">7</span><span class="pvd">0</span><span class="pvd">6</span>')}<p class="say">706 has 7 hundreds, 0 tens, and 6 ones.</p>` },
           ],
         },
@@ -191,6 +204,7 @@ const Curriculum = (() => {
           id: 'col-add-nc', title: 'Adding in Columns', icon: '🧮', practice: 3, quiz: 4,
           gen: { type: 'column', op: 'add', digits: [2, 2], regroup: 'none' },
           learn: [
+            { title: 'Remember the places', html: `<p>The right-hand digit counts <b>ones</b>, the next one counts <b>tens</b>. 43 is 4 tens and 3 ones.</p>${Vis.number(43, true)}` },
             { title: 'Line up the places', html: `<p>To add big numbers, write one number above the other. Line up the <b>ones</b> under the ones and the <b>tens</b> under the tens.</p>${col('  4 3\n+ 2 5\n─────')}<p class="say">Always start with the <b>ones</b> column on the right, then move left.</p>` },
             { title: 'Watch: 43 + 25', demo: ['add', 43, 25] },
             { title: 'Watch: 61 + 27', demo: ['add', 61, 27] },
