@@ -19,9 +19,13 @@ const U = (() => {
 
   // el('div.card.big', {onclick: fn, html: '...'}, child, child...)
   function el(spec, attrs = {}, ...children) {
-    const parts = spec.split('.');
-    const node = document.createElement(parts[0] || 'div');
-    if (parts.length > 1) node.className = parts.slice(1).join(' ');
+    // spec: tag, optional #id, optional .classes in any order, e.g. 'div.card#main' or 'div#main.card'
+    const tag = (spec.match(/^[a-z0-9-]+/i) || ['div'])[0];
+    const node = document.createElement(tag);
+    const id = spec.match(/#([\w-]+)/);
+    if (id) node.id = id[1];
+    const classes = [...spec.matchAll(/\.([\w-]+)/g)].map(m => m[1]);
+    if (classes.length) node.className = classes.join(' ');
     for (const [k, v] of Object.entries(attrs || {})) {
       if (v == null) continue;
       if (k === 'html') node.innerHTML = v;
