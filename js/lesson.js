@@ -380,7 +380,7 @@ const Lesson = (() => {
     body.appendChild(card);
     const btns = el('div.btn-row');
     btns.appendChild(el('button.btn.ghost', { onclick: () => start(S.lesson) }, '↺ Play again'));
-    const next = Curriculum.nextLesson(S.profile);
+    const next = Curriculum.nextAfter(S.profile, S.lesson);
     if (r.stars > 0 && next && next.id !== S.lesson.id) btns.appendChild(el('button.btn.primary', { onclick: () => start(next) }, `Next: ${next.title} ▶`));
     btns.appendChild(el('button.btn.secondary', { onclick: () => Screens.world(S.lesson.world.id) }, '🗺️ Map'));
     body.appendChild(btns);

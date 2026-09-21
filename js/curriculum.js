@@ -566,6 +566,16 @@ const Curriculum = (() => {
     const passed = prevWorld.lessons.filter(l => (profile.lessons[l.id] || {}).stars > 0).length;
     return passed >= Math.min(2, prevWorld.lessons.length);
   }
+  // The lesson to offer after finishing `lesson`: the next one in the same world, then the
+  // first lesson of the next world, and only then fall back to the global "continue" pick.
+  function nextAfter(profile, lesson) {
+    const w = lesson.world;
+    const inWorld = w.lessons[lesson.index + 1];
+    if (inWorld) return isUnlocked(profile, inWorld) ? inWorld : null;
+    const nextWorld = WORLDS[lesson.worldIndex + 1];
+    if (nextWorld && isUnlocked(profile, nextWorld.lessons[0])) return nextWorld.lessons[0];
+    return nextLesson(profile);
+  }
   function nextLesson(profile) {
     return LESSONS.find(l => isUnlocked(profile, l) && !((profile.lessons[l.id] || {}).stars > 0)) || LESSONS.find(l => (profile.lessons[l.id] || {}).stars < 3) || LESSONS[LESSONS.length - 1];
   }
@@ -575,5 +585,5 @@ const Curriculum = (() => {
     return { stars, maxStars: world.lessons.length * 3, done, total: world.lessons.length };
   }
 
-  return { WORLDS, LESSONS, lessonById, worldById, isUnlocked, nextLesson, worldProgress };
+  return { WORLDS, LESSONS, lessonById, worldById, isUnlocked, nextLesson, nextAfter, worldProgress };
 })();
